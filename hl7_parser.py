@@ -19,7 +19,7 @@ with open('elr.hl7', 'rb') as file:
     elr_message = file.read()
 
 # print(elr_message)
-print(hl7.isfile(elr_message))
+# print(hl7.isfile(elr_message))
 
 # hl7_message = hl7.split_file(elr_message)
 # hl7_message = hl7.parse(hl7_message)
@@ -32,6 +32,12 @@ print(hl7.isfile(elr_message))
 
 if hl7.isfile(elr_message):
     hl7_messages = hl7.split_file(elr_message)
+    # print(hl7_messages[1])
+
+    # Write HL7 message
+    # with open('oru_2.hl7','wb') as hl7_file:
+    #     hl7_file.write(hl7_messages[1])
+
     if len(hl7_messages) > 0:
         # messages = []
         # print hl7_messages
@@ -40,7 +46,7 @@ if hl7.isfile(elr_message):
         for message in hl7_messages:
             parsed_hl7 = hl7.parse(message)
             # index += 1
-            print(parsed_hl7[3])
+            print(parsed_hl7.segments('PID')[0][3][0])
             
         # print messages
     # print(len(hl7_messages))
