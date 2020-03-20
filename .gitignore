@@ -1,4 +1,6 @@
 # Ignore VS Code settings
 .vscode/
+# Ignore report files
+report/
 # Ignore test files
 test_files/
