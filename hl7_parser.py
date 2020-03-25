@@ -3,12 +3,12 @@ import re
 
 # File paths
 cr_lf = '\r\n'
+tab = '\t'
 file_name = 'test_files/elr_wilson.hl7'
 # file_name = 'test_files/elr_catawba.hl7'
 report_name = 'report/' + 'basic_elr_validation_report_wilson.txt'
 # report_name = 'report/' + 'basic_elr_validation_report_catawba.txt'
 report = ''
-report_content = ''
 
 # def MSH(segment):
 #     print('MSH Segment')
@@ -18,144 +18,216 @@ report_content = ''
 # def PID():
 #     print('PID Segment')
 
-def msh():
-    
+def msh(msh_segment):
+    # print(msh_segment(1)(10))
+    msh_fields = 'MSH Segment' + cr_lf
+    msh_fields += 'MSH-03:{}'.format(str(msh_segment(1)(3))) + cr_lf
+    msh_fields += 'MSH-04:{}'.format(str(msh_segment(1)(4))) + cr_lf
+    msh_fields += 'MSH-05:{}'.format(str(msh_segment(1)(5))) + cr_lf
+    msh_fields += 'MSH-06:{}'.format(str(msh_segment(1)(6))) + cr_lf
+    msh_fields += 'MSH-07:{}'.format(str(msh_segment(1)(7))) + cr_lf
+    msh_fields += 'MSH-09:{}'.format(str(msh_segment(1)(9))) + cr_lf
+    msh_fields += 'MSH-10:{}'.format(str(msh_segment(1)(10))) + cr_lf
+    msh_fields += 'MSH-11:{}'.format(str(msh_segment(1)(11))) + cr_lf
+    msh_fields += 'MSH-12:{}'.format(str(msh_segment(1)(12))) + cr_lf
+    msh_fields += 'MSH-15:{}'.format(str(msh_segment(1)(15))) + cr_lf
+    msh_fields += 'MSH-16:{}'.format(str(msh_segment(1)(16))) + cr_lf
+    msh_fields += 'MSH-21:{}'.format(str(msh_segment(1)(21))) + cr_lf
+    msh_fields += '' + cr_lf
 
-def generate_elr_report(parsed_hl7):
+    return msh_fields
+
+def pid(pid_segment):
+    # print(str(pid_segment(1)(2)))
+    pid_fields = 'PID Segment' + cr_lf
+    pid_fields += 'PID-02:{}'.format(str(pid_segment(1)(2))) + cr_lf
+    pid_components = ''
+    # pid_fields += 'PID-03:{}'.format(str(pid_segment(1)(3))) + cr_lf
+    # PID-3 repetitions
     index = 1
-    # MSH Segment
-    report_content =('MSH Segment') + cr_lf
-    report_content += ('MSH-3:{}'.format(str(parsed_hl7.segment('MSH')(3)))) + cr_lf
-    report_content += ('MSH-4:{}'.format(str(parsed_hl7.segment('MSH')(4)))) + cr_lf
-    report_content += ('MSH-5:{}'.format(str(parsed_hl7.segment('MSH')(5)))) + cr_lf
-    report_content += ('MSH-6:{}'.format(str(parsed_hl7.segment('MSH')(6)))) + cr_lf
-    report_content += ('MSH-7:{}'.format(str(parsed_hl7.segment('MSH')(7)))) + cr_lf
-    report_content += ('MSH-9:{}'.format(str(parsed_hl7.segment('MSH')(9)))) + cr_lf
-    report_content += ('MSH-10:{}'.format(str(parsed_hl7.segment('MSH')(10)))) + cr_lf
-    report_content += ('MSH-11:{}'.format(str(parsed_hl7.segment('MSH')(11)))) + cr_lf
-    report_content += ('MSH-12:{}'.format(str(parsed_hl7.segment('MSH')(12)))) + cr_lf
-    report_content += ('MSH-15:{}'.format(str(parsed_hl7.segment('MSH')(15)))) + cr_lf
-    report_content += ('MSH-16:{}'.format(str(parsed_hl7.segment('MSH')(16)))) + cr_lf
-    report_content += ('MSH-21:{}'.format(str(parsed_hl7.segment('MSH')(21)))) + cr_lf
-    report_content += ('') + cr_lf
+    pid_fields += 'PID-03:' + cr_lf
+    for pid_3_repetition in pid_segment(1)(3):
+        pid_fields += tab + 'PID-03[{}]:{}'.format(str(index),str(pid_3_repetition)) + cr_lf
+        # pid components
+        # print(len(pid_3_repetition))
+        # print(pid_3_repetition)
+        index_component = 1 
+        for pid_components in pid_3_repetition:
+            if pid_components(1) != '':
+                pid_fields += tab + tab + 'PID-03[{}].{}:{}'.format(str(index),str(index_component),str(pid_components)) + cr_lf
+            index_component += 1
+        index_component = 1
+        index +=1
+    index = 1
 
-    # PID Segment
-    report_content += ('PID Segment') + cr_lf
-    report_content += ('PID-2:{}'.format(str(parsed_hl7.segment('PID')(2)))) + cr_lf
-    report_content += ('PID-3:{}'.format(str(parsed_hl7.segment('PID')(3)))) + cr_lf
-    report_content += ('PID-4:{}'.format(str(parsed_hl7.segment('PID')(4)))) + cr_lf
-    report_content += ('PID-5:{}'.format(str(parsed_hl7.segment('PID')(5)))) + cr_lf
-    report_content += ('PID-6:{}'.format(str(parsed_hl7.segment('PID')(6)))) + cr_lf
-    report_content += ('PID-7:{}'.format(str(parsed_hl7.segment('PID')(7)))) + cr_lf
-    report_content += ('PID-8:{}'.format(str(parsed_hl7.segment('PID')(8)))) + cr_lf
-    report_content += ('PID-9:{}'.format(str(parsed_hl7.segment('PID')(9)))) + cr_lf
-    report_content += ('PID-10:{}'.format(str(parsed_hl7.segment('PID')(10)))) + cr_lf
-    report_content += ('PID-11:{}'.format(str(parsed_hl7.segment('PID')(11)))) + cr_lf
-    report_content += ('PID-13:{}'.format(str(parsed_hl7.segment('PID')(13)))) + cr_lf
-    report_content += ('PID-14:{}'.format(str(parsed_hl7.segment('PID')(14)))) + cr_lf
-    report_content += ('PID-15:{}'.format(str(parsed_hl7.segment('PID')(15)))) + cr_lf
-    report_content += ('PID-19:{}'.format(str(parsed_hl7.segment('PID')(19)))) + cr_lf
-    report_content += ('PID-22:{}'.format(str(parsed_hl7.segment('PID')(22)))) + cr_lf
-    report_content += ('PID-29:{}'.format(str(parsed_hl7.segment('PID')(29)))) + cr_lf
-    report_content += ('PID-30:{}'.format(str(parsed_hl7.segment('PID')(30)))) + cr_lf
-    report_content += ('') + cr_lf
+    pid_fields += 'PID-04:{}'.format(str(pid_segment(1)(4))) + cr_lf
+    pid_fields += 'PID-05:' + cr_lf
+    # pid_fields += 'PID-05:{}'.format(str(pid_segment(1)(5))) + cr_lf
+    for pid_5_repetition in pid_segment(1)(5):
+        for pid_components in pid_5_repetition:
+            if pid_components(1) != '':
+                pid_fields += tab + 'PID-05.{}:{}'.format(str(index_component),str(pid_components)) + cr_lf
+            index_component += 1
+        index_component = 1
+        index +=1
+    index =1
 
-    # Print ORC Segment
-    report_content += ('ORC Segment') + cr_lf
-    report_content += ('ORC-10:{}'.format(str(parsed_hl7.segment('ORC')(10)))) + cr_lf
-    report_content += ('ORC-12.1:{}'.format(str(parsed_hl7.segment('ORC')(12)(1)(2)))) + cr_lf
-    report_content += ('ORC-12.3:{}'.format(str(parsed_hl7.segment('ORC')(12)(1)(3)))) + cr_lf
-    report_content += ('ORC-21.1:{}'.format(str(parsed_hl7.segment('ORC')(21)(1)(1)))) + cr_lf
-    report_content += ('ORC-21.7:{}'.format(str(parsed_hl7.segment('ORC')(21)(1)(7)))) + cr_lf
-    report_content += ('ORC-22:{}'.format(str(parsed_hl7.segment('ORC')(22)))) + cr_lf
-    report_content += ('ORC-23:{}'.format(str(parsed_hl7.segment('ORC')(23)))) + cr_lf
-    report_content += ('ORC-24:{}'.format(str(parsed_hl7.segment('ORC')(24)))) + cr_lf
-    report_content += ('') + cr_lf
-    # print_elr_info(parsed_hl7,'ORC',10)
-    # print_elr_info(parsed_hl7,'ORC',12,2)
-    # print_elr_info(parsed_hl7,'ORC',12,3)
-    # print_elr_info(parsed_hl7,'ORC',21,1)
-    # print_elr_info(parsed_hl7,'ORC',21,7)
-    # print_elr_info(parsed_hl7,'ORC',22)
-    # print_elr_info(parsed_hl7,'ORC',23)
-    # print_elr_info(parsed_hl7,'ORC',24)
+    pid_fields += 'PID-06:{}'.format(str(pid_segment(1)(6))) + cr_lf
+    pid_fields += 'PID-07:{}'.format(str(pid_segment(1)(7))) + cr_lf
+    pid_fields += 'PID-08:{}'.format(str(pid_segment(1)(8))) + cr_lf
+    pid_fields += 'PID-09:{}'.format(str(pid_segment(1)(9))) + cr_lf
+    pid_fields += 'PID-10:{}'.format(str(pid_segment(1)(10))) + cr_lf
+    pid_fields += 'PID-11:' + cr_lf
+    # pid_fields += 'PID-11:{}'.format(str(pid_segment(1)(11))) + cr_lf
+    for pid_5_repetition in pid_segment(1)(11):
+        for pid_components in pid_5_repetition:
+            if pid_components(1) != '':
+                pid_fields += tab + 'PID-11.{}:{}'.format(str(index_component),str(pid_components)) + cr_lf
+            index_component += 1
+        index_component = 1
+        index +=1    
+    index = 1
 
+    pid_fields += 'PID-13:{}'.format(str(pid_segment(1)(13))) + cr_lf
+    pid_fields += 'PID-14:{}'.format(str(pid_segment(1)(14))) + cr_lf
+    pid_fields += 'PID-15:{}'.format(str(pid_segment(1)(15))) + cr_lf
+    pid_fields += 'PID-19:{}'.format(str(pid_segment(1)(19))) + cr_lf
+    pid_fields += 'PID-22:{}'.format(str(pid_segment(1)(22))) + cr_lf
+    pid_fields += 'PID-29:{}'.format(str(pid_segment(1)(29))) + cr_lf
+    pid_fields += 'PID-30:{}'.format(str(pid_segment(1)(30))) + cr_lf
+    pid_fields += '' + cr_lf
 
-    # Print OBR Segment
-    report_content += ('OBR Segment(s)') + cr_lf
-    obr_segments = parsed_hl7.segments('OBR')
+    return pid_fields
+
+def orc(orc_segment):
+    orc_fields = 'ORC Segment' + cr_lf
+    orc_fields += 'ORC-10:{}'.format(str(orc_segment(1)(10))) + cr_lf
+    orc_fields += 'ORC-12.1:{}'.format(str(orc_segment(1)(12)(1)(2))) + cr_lf
+    orc_fields += 'ORC-12.3:{}'.format(str(orc_segment(1)(12)(1)(3))) + cr_lf
+    orc_fields += 'ORC-21.1:{}'.format(str(orc_segment(1)(21)(1)(1))) + cr_lf
+    orc_fields += 'ORC-21.7:{}'.format(str(orc_segment(1)(21)(1)(7))) + cr_lf
+    orc_fields += 'ORC-22:{}'.format(str(orc_segment(1)(22))) + cr_lf
+    orc_fields += 'ORC-23:{}'.format(str(orc_segment(1)(23))) + cr_lf
+    orc_fields += 'ORC-24:{}'.format(str(orc_segment(1)(24))) + cr_lf
+    orc_fields += '' + cr_lf
+
+    return orc_fields
+
+def obr(obr_segments):
+    index = 1
+    obr_fields = '' + cr_lf
+    obr_fields = 'OBR Segment(s)' + cr_lf
     for obr_field in obr_segments:
-        report_content += ('OBR[{}]'.format(index)) + cr_lf
-        report_content += ('OBR[{}]-3.1:{}'.format(str(obr_field(1)), str(obr_field(3)(1)(1)))) + cr_lf
-        report_content += ('OBR[{}]-4:{}'.format(str(obr_field(1)), str(obr_field(4)))) + cr_lf
-        report_content += ('OBR[{}]-16:{}'.format(str(obr_field(1)), str(obr_field(16)))) + cr_lf
-        report_content += ('OBR[{}]-22:{}'.format(str(obr_field(1)), str(obr_field(22)))) + cr_lf
-        report_content += ('OBR[{}]-25:{}'.format(str(obr_field(1)), str(obr_field(25)))) + cr_lf
-        if len(obr_field) >= 33:
-            report_content += ('OBR[{}]-31:{}'.format(str(obr_field(1)), str(obr_field(32)))) + cr_lf
-        report_content += ('') + cr_lf
-        
-        index += 1
+        obr_fields += 'OBR[{}]'.format(str(index)) + cr_lf
+        obr_fields += 'OBR[{}]-02.1:{}'.format(str(obr_field(1)), str(obr_field(2)(1)(1))) + cr_lf
+        obr_fields += 'OBR[{}]-03.1:{}'.format(str(obr_field(1)), str(obr_field(3)(1)(1))) + cr_lf
+        obr_fields += 'OBR[{}]-02 (Susceptibility):{}'.format(str(obr_field(1)), str(obr_field(2)(1))) + cr_lf
+        obr_fields += 'OBR[{}]-03 (Susceptibility):{}'.format(str(obr_field(1)), str(obr_field(3)(1))) + cr_lf
+        obr_fields += 'OBR[{}]-04:{}'.format(str(obr_field(1)), str(obr_field(4))) + cr_lf
+        obr_fields += 'OBR[{}]-16:{}'.format(str(obr_field(1)), str(obr_field(16))) + cr_lf
+        obr_fields += 'OBR[{}]-22:{}'.format(str(obr_field(1)), str(obr_field(22))) + cr_lf
+        obr_fields += 'OBR[{}]-25:{}'.format(str(obr_field(1)), str(obr_field(25))) + cr_lf
         # print(len(obr_field))
+        if len(obr_field) > 27:
+            if obr_field(26)(1) != '':
+                obr_fields += 'OBR 26 (Susceptibilities)' + cr_lf
+                obr_fields += tab + 'OBR[{}]-26:{}'.format(str(obr_field(1)), str(obr_field(26))) + cr_lf
+                obr_fields += tab + tab + 'OBR[{}]-26.1:{}'.format(str(obr_field(1)), str(obr_field(26)(1)(1))) + cr_lf
+                obr_fields += tab + tab + 'OBR[{}]-26.2:{}'.format(str(obr_field(1)), str(obr_field(26)(1)(2))) + cr_lf
+                obr_fields += tab + tab + 'OBR[{}]-26.3:{}'.format(str(obr_field(1)), str(obr_field(26)(1)(3))) + cr_lf
+            else:
+                obr_fields += 'OBR[{}]-26:'.format(str(obr_field(1))) + cr_lf
+
+            if obr_field(29)(1) != '':
+                obr_fields += 'OBR 29 (Susceptibilities)' + cr_lf
+                obr_fields += tab + 'OBR[{}]-29:{}'.format(str(obr_field(1)), str(obr_field(29))) + cr_lf
+                obr_fields += tab + tab + 'OBR[{}]-29.1:{}'.format(str(obr_field(1)), str(obr_field(29)(1)(1))) + cr_lf
+                obr_fields += tab + tab + 'OBR[{}]-29.2:{}'.format(str(obr_field(1)), str(obr_field(29)(1)(2))) + cr_lf
+            else:
+                obr_fields += 'OBR[{}]-29:'.format(str(obr_field(1))) + cr_lf
+
+            if obr_field(31)(1) != '':
+                obr_fields += 'OBR[{}]-31:{}'.format(str(obr_field(1)), str(obr_field(31))) + cr_lf
+            else:
+                obr_fields += 'OBR[{}]-31:'.format(str(obr_field(1))) + cr_lf
+
+            # obr_fields += 'OBR[{}]-29.1:{}'.format(str(obr_field(1)), str(obr_field(29)(1)(1))) + cr_lf
+        obr_fields += '' + cr_lf
+
+        index += 1
+
+        
+
+        #debug code
         # index_j = 1
         # for field in obr_field:
         #     print('OBR-{}:{}'.format(str(index_j), str(field)))
         #     index_j += 1
+    obr_fields += '' + cr_lf
 
-    # print_elr_info(parsed_hl7,'OBR',3,1)
-    # print_elr_info(parsed_hl7,'OBR',4)
-    # print_elr_info(parsed_hl7,'OBR',16)
-    # print_elr_info(parsed_hl7,'OBR',22)
-    # print_elr_info(parsed_hl7,'OBR',25)
-    # print_elr_info(parsed_hl7,'OBR',31)
+    return obr_fields
 
-    # Print OBX Segment
-    report_content += ('OBX Segment(s)') + cr_lf
-    obx_segments = parsed_hl7.segments('OBX')
+def obx(obx_segments):
+    obx_fields = 'OBX Segment(s)' + cr_lf
     index = 1
     for obx_field in obx_segments:
-        report_content += ('OBX[{}]'.format(str(index))) + cr_lf
-        report_content += ('OBX[{}]-2:{}'.format(str(obx_field(1)), str(obx_field(2)))) + cr_lf
-        report_content += ('OBX[{}]-3:{}'.format(str(obx_field(1)), str(obx_field(3)))) + cr_lf
-        report_content += ('OBX[{}]-4:{}'.format(str(obx_field(1)), str(obx_field(4)))) + cr_lf
-        report_content += ('OBX[{}]-5:{}'.format(str(obx_field(1)), str(obx_field(5)))) + cr_lf
-        report_content += ('OBX[{}]-6:{}'.format(str(obx_field(1)), str(obx_field(6)))) + cr_lf
-        report_content += ('OBX[{}]-7:{}'.format(str(obx_field(1)), str(obx_field(7)))) + cr_lf
-        report_content += ('OBX[{}]-23.1:{}'.format(str(obx_field(1)), str(obx_field(23)(1)(1)))) + cr_lf
-        report_content += ('OBX[{}]-23.6:{}'.format(str(obx_field(1)), str(obx_field(23)(1)(6)))) + cr_lf
-        report_content += ('OBX[{}]-23.10:{}'.format(str(obx_field(1)), str(obx_field(23)(1)(10)))) + cr_lf
-        report_content += ('') + cr_lf
-        
+        obx_fields += 'OBX[{}]'.format(str(index)) + cr_lf
+        obx_fields += 'OBX[{}]-02:{}'.format(str(obx_field(1)), str(obx_field(2))) + cr_lf
+        obx_fields += 'OBX[{}]-03:{}'.format(str(obx_field(1)), str(obx_field(3))) + cr_lf
+        obx_fields += 'OBX[{}]-04:{}'.format(str(obx_field(1)), str(obx_field(4))) + cr_lf
+        obx_fields += 'OBX[{}]-05:{}'.format(str(obx_field(1)), str(obx_field(5))) + cr_lf
+        obx_fields += 'OBX[{}]-06:{}'.format(str(obx_field(1)), str(obx_field(6))) + cr_lf
+        obx_fields += 'OBX[{}]-07:{}'.format(str(obx_field(1)), str(obx_field(7))) + cr_lf
+        obx_fields += 'OBX[{}]-23.1:{}'.format(str(obx_field(1)), str(obx_field(23)(1)(1))) + cr_lf
+        obx_fields += 'OBX[{}]-23.6:{}'.format(str(obx_field(1)), str(obx_field(23)(1)(6))) + cr_lf
+        obx_fields += 'OBX[{}]-23.10:{}'.format(str(obx_field(1)), str(obx_field(23)(1)(10))) + cr_lf
+        obx_fields += '' + cr_lf
         index += 1
 
-    # print_elr_info(parsed_hl7,'OBX',2)
-    # print_elr_info(parsed_hl7,'OBX',3)
-    # print_elr_info(parsed_hl7,'OBX',4)
-    # print_elr_info(parsed_hl7,'OBX',5)
-    # print_elr_info(parsed_hl7,'OBX',6)
-    # print_elr_info(parsed_hl7,'OBX',7)
-    # print_elr_info(parsed_hl7,'OBX',23,6)
-    # print_elr_info(parsed_hl7,'OBX',23,10)
+    obx_fields += '' + cr_lf
 
+    return obx_fields
 
-    # Print SPM Segment
-    report_content += ('SPM Segments(s)') + cr_lf
-    spm_segments = parsed_hl7.segments('SPM')
+def spm(spm_segments):
+    spm_fields = 'SPM Segment(s)' + cr_lf
     index = 1
     for spm_field in spm_segments:
-        report_content += ('SPM[{}]'.format(str(index))) + cr_lf
-        report_content += ('SPM[{}]-2.2.1:{}'.format(str(spm_field(1)), str(spm_field(2)(1)(2)(1)))) + cr_lf
-        report_content += ('SPM[{}]-4:{}'.format(str(spm_field(1)), str(spm_field(4)))) + cr_lf
-        report_content += ('SPM[{}]-8:{}'.format(str(spm_field(1)), str(spm_field(8)))) + cr_lf
-        report_content += ('') + cr_lf
-        
+        spm_fields += 'SPM[{}]'.format(str(index)) + cr_lf
+        spm_fields += 'SPM[{}]-2.2.1:{}'.format(str(spm_field(1)), str(spm_field(2)(1)(2)(1))) + cr_lf
+        spm_fields += 'SPM[{}]-4:{}'.format(str(spm_field(1)), str(spm_field(4))) + cr_lf
+        spm_fields += 'SPM[{}]-8:{}'.format(str(spm_field(1)), str(spm_field(8))) + cr_lf
+        spm_fields += '' + cr_lf
         index +=1
 
-    # print('')
-    # print("SPM Segment")
-    # print_elr_info(parsed_hl7,'SPM',2,2,1)
-    # print_elr_info(parsed_hl7,'SPM',4)
-    # print_elr_info(parsed_hl7,'SPM',8)
+    spm_fields += ''
+
+    return spm_fields
+
+def susceptibility(segments):
+    susceptibility_fields = 'For Susceptibility Only' + cr_lf
+    # Need to add code to look if OBX-3 is a susceptibility
+    susceptibility_fields += '' + cr_lf
+
+    return susceptibility_fields
+
+def generate_elr_report(parsed_hl7):
+    report_content = ''
+    index = 1
+
+    # MSH Segment
+    report_content = msh(parsed_hl7.segments('MSH'))
+    # PID Segment
+    report_content += pid(parsed_hl7.segments('PID'))
+    # Print ORC Segment
+    report_content += orc(parsed_hl7.segments('ORC'))
+    # Print OBR Segment
+    report_content += obr(parsed_hl7.segments('OBR'))
+    # Print OBX Segment
+    report_content += obx(parsed_hl7.segments('OBX'))
+    # Print SPM Segment
+    report_content += spm(parsed_hl7.segments('SPM'))
+    # Print Susceptibilities
+    report_content += susceptibility('')
 
     return report_content
 
@@ -228,4 +300,7 @@ else:
 # print(report_content)
 with open(report_name, 'w') as file:
     file.write(report)
+
+parsed_hl7 = None
+report = None
 
