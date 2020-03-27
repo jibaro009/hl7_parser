@@ -4,10 +4,12 @@ import re
 # File paths
 cr_lf = '\r\n'
 tab = '\t'
-file_name = 'test_files/elr_wilson.hl7'
+# file_name = 'test_files/elr_wilson.hl7'
 # file_name = 'test_files/elr_catawba.hl7'
-report_name = 'report/' + 'basic_elr_validation_report_wilson.txt'
+file_name = 'test_files/elr_caromont.hl7'
+# report_name = 'report/' + 'basic_elr_validation_report_wilson.txt'
 # report_name = 'report/' + 'basic_elr_validation_report_catawba.txt'
+report_name = 'report/' + 'basic_elr_validation_report_caromont.txt'
 report = ''
 
 # def MSH(segment):
@@ -204,8 +206,147 @@ def spm(spm_segments):
     return spm_fields
 
 def susceptibility(segments):
-    susceptibility_fields = 'For Susceptibility Only' + cr_lf
+    susceptibility_fields = 'For Susceptibility Only' + cr_lf 
+    susceptibility_fields += '-----------------------' + cr_lf 
     # Need to add code to look if OBX-3 is a susceptibility
+    # print(segments('OBX')(1)(3))
+    # print(segments('OBR')(2)(26)(1))
+    
+    # OBR 26 link
+    child_obr_26_1 = str(segments('OBR')(2)(26)(1)(1))
+    child_obr_26_2 = str(segments('OBR')(2)(26)(1)(2))
+    child_obr_26_3 = str(segments('OBR')(2)(26)(1)(3))
+    parent_obx_3 = str(segments('OBX')(1)(3))
+    parent_obx_4 = str(segments('OBX')(1)(4))
+    parent_obx_5_5 = str(segments('OBX')(1)(5)(1)(5))
+    parent_obx_5_9 = str(segments('OBX')(1)(5)(1)(9))
+
+    # OBR 26-1
+    susceptibility_fields += 'OBR-26.1 link to parent OBX-3:' + cr_lf
+    susceptibility_fields += tab + 'OBR-26.1:{}'.format(child_obr_26_1) + cr_lf
+    susceptibility_fields += tab + 'OBX-03  :{}'.format(parent_obx_3) + cr_lf
+
+    if re.sub('&','',child_obr_26_1) == re.sub('\^','',parent_obx_3):
+        susceptibility_fields += tab + tab + 'Child OBR-26.1 = to Parent OBX-3' + cr_lf + cr_lf
+    else:
+        susceptibility_fields += tab + tab + 'Child OBR-26.1 <> to Parent OBX-3' + cr_lf + cr_lf
+    
+    # OBR 26-2
+    susceptibility_fields += 'OBR-26.2 link to parent OBX-4:' + cr_lf
+    susceptibility_fields += tab + 'OBR-26.2:{}'.format(child_obr_26_2) + cr_lf
+    susceptibility_fields += tab + 'OBX-04  :{}'.format(parent_obx_4) + cr_lf
+
+
+    if child_obr_26_2 == parent_obx_4:
+        susceptibility_fields += tab + tab + 'Child OBR-26.2 = to Parent OBX-4' + cr_lf + cr_lf
+    else:
+        susceptibility_fields += tab + tab + 'Child OBR-26.2 <> to Parent OBX-4' + cr_lf + cr_lf
+    
+    # OBR 26.3
+    susceptibility_fields += 'OBR-26.3 link to parent OBX-5.9 or 5.5:' + cr_lf
+    susceptibility_fields += tab + 'OBR-26.3:{}'.format(child_obr_26_3) + cr_lf
+    susceptibility_fields += tab + 'OBX-05.9:{}'.format(parent_obx_5_9) + cr_lf
+
+    if child_obr_26_3.upper() == parent_obx_5_9.upper():
+        susceptibility_fields += tab + tab + 'Child OBR-26.3 = to Parent OBX-5.9' + cr_lf + cr_lf
+    else:
+        susceptibility_fields += tab + tab + 'Child OBR-26.3 <> to Parent OBX-5.9' + cr_lf + cr_lf
+
+    # OBR 29 link
+    child_obr_29_1 = str(segments('OBR')(2)(29)(1)(1))
+    child_obr_29_2 = str(segments('OBR')(2)(29)(1)(2))
+    parent_obr_2 = str(segments('OBR')(1)(2))
+    parent_obr_3 = str(segments('OBR')(1)(3))
+
+    # OBR 29-1
+    susceptibility_fields += 'OBR-29.1 link to parent OBR-2:' + cr_lf
+    susceptibility_fields += tab + 'OBR-29.1:{}'.format(child_obr_29_1) + cr_lf
+    susceptibility_fields += tab + 'OBR-02  :{}'.format(parent_obr_2) + cr_lf
+
+    if re.sub('&','',child_obr_29_1) == re.sub('\^','',parent_obr_2):
+        susceptibility_fields += tab + tab + 'Child OBR-29.1 = to Parent OBR-2' + cr_lf + cr_lf
+    else:
+        susceptibility_fields += tab + tab + 'Child OBR-29.1 <> to Parent OBR-2' + cr_lf + cr_lf
+
+    # OBR 29-1
+    susceptibility_fields += 'OBR-29.2 link to parent OBR-3:' + cr_lf
+    susceptibility_fields += tab + 'OBR-29.2:{}'.format(child_obr_29_2) + cr_lf
+    susceptibility_fields += tab + 'OBR-03  :{}'.format(parent_obr_3) + cr_lf
+
+    if re.sub('&','',child_obr_29_2) == re.sub('\^','',parent_obr_3):
+        susceptibility_fields += tab + tab + 'Child OBR-29.2 = to Parent OBR-3' + cr_lf + cr_lf
+    else:
+        susceptibility_fields += tab + tab + 'Child OBR-29.2 <> to Parent OBR-3' + cr_lf + cr_lf
+
+    # OBX-2 Code
+    # print(len(segments('OBR')))
+    susceptibility_fields += 'OBX-2 Data types' + cr_lf
+    
+    valid_data_types = [
+                        'CWE',
+                        'SN',
+                        'NM']
+    invalid_data_type_flag = False
+    obx_1_tracker = 0
+    
+    for segment in segments('OBX'):
+        # print(segment(1))
+        if str(segment(1)) == '1':
+            obx_1_tracker += 1
+        
+        if obx_1_tracker >= 2:
+            # Check susceptibility OBX-2 Data Type
+            if str(segment(2)) in valid_data_types:
+                susceptibility_fields += tab + 'OBX[{:0>2}]-2 data type: {}'.format(str(segment(1)), str(segment(2))) + cr_lf
+                # invalid_data_type_flag = True
+            else:
+                susceptibility_fields += tab + 'OBX[{:0>2}]-2 data type: {} => Invalid'.format(str(segment(1)), str(segment(2))) + cr_lf
+                # invalid_data_type_flag = False
+
+    susceptibility_fields += '' + cr_lf
+    # print(str(invalid_data_type_flag))
+    # n = '1'
+    # print('{:0>2}'.format(n))
+    # print(obx_1_tracker)
+
+    # OBX-3 Code.
+    susceptibility_fields += 'OBX-3 Checking for LOINC Codes'  + cr_lf
+    pattern = '(\d{1,5}-\d{1})'
+    loinc_pattern = re.compile(pattern)
+    obx_1_tracker = 0
+    for segment in segments('OBX'):
+        # print(segment(1))
+        if str(segment(1)) == '1':
+            obx_1_tracker += 1
+        
+        if obx_1_tracker >= 2:
+            #  Check susceptibility OBX-3 LOINC Code
+            # print((re.match(loinc_pattern,str(segment(3)(1)))))')
+            # print(segment(3)(1)(3))
+            if str(segment(3)(1)(3)) == 'LN':
+                susceptibility_fields += 'OBX[{:0>2}]-3.1: {:<10} OBX[{:0>2}]-3.3: {}. LOINC code pattern is: {}'.format(str(segment(1)), str(segment(3)(1)(1)), str(segment(1)), str(segment(3)(1)(3)), 'valid' if loinc_pattern.match(str(segment(3)(1))) else 'invalid') + cr_lf
+            else:
+                susceptibility_fields += 'OBX[{:0>2}]-3.1: {:<10} OBX[{:0>2}]-3.3: {}. "LN" code expected'.format(str(segment(1)), str(segment(3)(1)(1)), str(segment(1)), str(segment(3)(1)(3))) + cr_lf
+            # if loinc_pattern.match(str(segment(3)(1))):
+                # print(segment(3)(1)(1))
+                # print('OBX[{:0>2}]-3.1 Has a valid LOINC Code pattern: {} \t\t OBX[{:0>2}]3'.format(str(segment(1)), str(segment(3)(1)(1))))
+            # else:
+            #     print('OBX[{:0>2}]-3 LOINC Code has an invalid pattern: {}'.format(str(segment(3)(1))))
+            # print(loinc_pattern.match(str(segment(3)(1))))
+            # if str(segment(2)) in valid_data_types:
+            #     susceptibility_fields += tab + 'OBX-2 data type: {}, OBX[{:0>2}]'.format(str(segment(2)), str(segment(1))) + cr_lf
+            #     # invalid_data_type_flag = True
+            # else:
+            #     susceptibility_fields += tab + 'OBX-2 data type: {}, OBX[{:0>2}] => Invalid'.format(str(segment(2)), str(segment(1))) + cr_lf
+
+
+
+    # susceptibility_fields += 'OBR 26 (Susceptibilities)' + cr_lf
+    # susceptibility_fields += tab + 'OBR[{}]-26:{}'.format(str(obr_field(1)), str(obr_field(26))) + cr_lf
+    # susceptibility_fields += tab + tab + 'OBR[{}]-26.1:{}'.format(str(obr_field(1)), str(obr_field(26)(1)(1))) + cr_lf
+    # susceptibility_fields += tab + tab + 'OBR[{}]-26.2:{}'.format(str(obr_field(1)), str(obr_field(26)(1)(2))) + cr_lf
+    # susceptibility_fields += tab + tab + 'OBR[{}]-26.3:{}'.format(str(obr_field(1)), str(obr_field(26)(1)(3))) + cr_lf
+    
     susceptibility_fields += '' + cr_lf
 
     return susceptibility_fields
@@ -213,6 +354,9 @@ def susceptibility(segments):
 def generate_elr_report(parsed_hl7):
     report_content = ''
     index = 1
+
+    # print(str(parsed_hl7).upper())
+
 
     # MSH Segment
     report_content = msh(parsed_hl7.segments('MSH'))
@@ -227,8 +371,9 @@ def generate_elr_report(parsed_hl7):
     # Print SPM Segment
     report_content += spm(parsed_hl7.segments('SPM'))
     # Print Susceptibilities
-    report_content += susceptibility('')
-
+    if re.search('SUSCEPTIBILITY', str(parsed_hl7).upper()):
+        report_content += susceptibility(parsed_hl7.segments)
+        
     return report_content
 
 # Turning of this function
