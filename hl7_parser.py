@@ -1,5 +1,7 @@
-import hl7
+import os
 import re
+import hl7
+
 
 # File paths
 cr_lf = '\r\n'
@@ -409,6 +411,32 @@ def generate_elr_report(parsed_hl7):
 
     return report_content
 
+def parse_elr_message(elr_message):
+    # Replace LN with CR
+    elr_message += re.sub(r'\n',r'\r',elr_message)
+    hl7_message = hl7.split_file(elr_message)
+
+    parsed_hl7 = hl7.parse(hl7_message[0])
+
+    # if the splitted message list is greater than 1 loop over each element and parse it
+    if len(hl7_message) > 1:
+        for message in hl7_message:
+            # print(message)
+            parsed_hl7 = hl7.parse(message)
+            # print(parsed_hl7[0][0])
+            report += (generate_elr_report(parsed_hl7))
+    else:
+        parsed_hl7 = hl7.parse(hl7_message[0])
+        report = (generate_elr_report(parsed_hl7))
+        # print(parsed_hl7[0][0])
+
+    # print(report_content)
+    with open(report_name, 'w') as file:
+        file.write(report)
+
+    parsed_hl7 = None
+    report = None
+
 # Turning of this function
 # def print_elr_info(parsed_hl7, segment, field, component = 1, subfield = None):
 #     if subfield is None:
@@ -424,14 +452,15 @@ def generate_elr_report(parsed_hl7):
 with open(file_name, 'r') as file:
     elr_message = file.read()
 
+if os.stat(file_name).st_size == 0:
+    print('Input file has no data.')
+else:
+    parse_elr_message(elr_message)
+
 # print(elr_message)
 # print(hl7.isfile(elr_message))
 
-# Replace LN with CR
-elr_message += re.sub(r'\n',r'\r',elr_message)
-hl7_message = hl7.split_file(elr_message)
 
-parsed_hl7 = hl7.parse(hl7_message[0])
 
 #Debug
 '''
@@ -463,22 +492,5 @@ print(len(hl7_message))
 # for segment in segments:
 #     print(segment)
 
-# if the splitted message list is greater than 1 loop over each element and parse it
-if len(hl7_message) > 1:
-    for message in hl7_message:
-        # print(message)
-        parsed_hl7 = hl7.parse(message)
-        # print(parsed_hl7[0][0])
-        report += (generate_elr_report(parsed_hl7))
-else:
-    parsed_hl7 = hl7.parse(hl7_message[0])
-    report = (generate_elr_report(parsed_hl7))
-    # print(parsed_hl7[0][0])
 
-# print(report_content)
-with open(report_name, 'w') as file:
-    file.write(report)
-
-parsed_hl7 = None
-report = None
 
