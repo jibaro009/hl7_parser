@@ -7,11 +7,13 @@ import hl7
 cr_lf = '\r\n'
 tab = '\t'
 # file_name = 'test_files/elr_wilson_45503.hl7'
-file_name = 'test_files/elr_catwaba_04092020.hl7'
-# file_name = 'test_files/elr_caromont.hl7'
+# file_name = 'test_files/elr_catwaba_04092020.hl7'
+# file_name = 'test_files/elr_caromont_2020_04_18.hl7'
+file_name = 'test_files/elr_lenoir_19513_original.hl7'
 # report_name = 'report/' + 'basic_elr_validation_report_wilson_45503.txt'
-report_name = 'report/' + 'basic_elr_validation_report_catawba_04092020.txt'
-# report_name = 'report/' + 'basic_elr_validation_report_caromont.txt'
+# report_name = 'report/' + 'basic_elr_validation_report_catawba_04092020.txt'
+# report_name = 'report/' + 'basic_elr_validation_report_caromont_2020_04_18.txt'
+report_name = 'report/' + 'basic_elr_validation_report_lenoir_19513_original.txt'
 report = ''
 
 # def MSH(segment):
@@ -108,15 +110,15 @@ def orc(orc_segments):
     orc_fields = 'ORC Segment(s)' + cr_lf
     for orc_field in orc_segments:
         orc_fields += 'ORC[{:0>2}]'.format(str(index)) + cr_lf
-        orc_fields += 'ORC-[{:0>2}]10:{}'.format(str(orc_field(1)),str(orc_field(10))) + cr_lf
-        orc_fields += 'ORC-[{:0>2}]12.1:{}'.format(str(orc_field(1)),str(orc_field(12)(1)(2))) + cr_lf
-        orc_fields += 'ORC-[{:0>2}]12.3:{}'.format(str(orc_field(1)),str(orc_field(12)(1)(3))) + cr_lf
-        orc_fields += 'ORC-[{:0>2}]21.1:{}'.format(str(orc_field(1)),str(orc_field(21)(1)(1))) + cr_lf
-        orc_fields += 'ORC-[{:0>2}]21.7:{}'.format(str(orc_field(1)),str(orc_field(21)(1)(7))) + cr_lf
-        orc_fields += 'ORC-[{:0>2}]22:{}'.format(str(orc_field(1)),str(orc_field(22))) + cr_lf
-        orc_fields += 'ORC-[{:0>2}]23:{}'.format(str(orc_field(1)),str(orc_field(23))) + cr_lf
+        orc_fields += 'ORC-[{:0>2}]10:{}'.format(str(index),str(orc_field(10))) + cr_lf
+        orc_fields += 'ORC-[{:0>2}]12.2:{}'.format(str(index),str(orc_field(12)(1)(2))) + cr_lf
+        orc_fields += 'ORC-[{:0>2}]12.3:{}'.format(str(index),str(orc_field(12)(1)(3))) + cr_lf
+        orc_fields += 'ORC-[{:0>2}]21.1:{}'.format(str(index),str(orc_field(21)(1)(1))) + cr_lf
+        orc_fields += 'ORC-[{:0>2}]21.7:{}'.format(str(index),str(orc_field(21)(1)(7))) + cr_lf
+        orc_fields += 'ORC-[{:0>2}]22:{}'.format(str(index),str(orc_field(22))) + cr_lf
+        orc_fields += 'ORC-[{:0>2}]23:{}'.format(str(index),str(orc_field(23))) + cr_lf
         if str(orc_field(24)) != '':
-            orc_fields += 'ORC-[{:0>2}]24:{}'.format(str(orc_field(1)),str(orc_field(24))) + cr_lf
+            orc_fields += 'ORC-[{:0>2}]24:{}'.format(str(index),str(orc_field(24))) + cr_lf
         else:
             orc_fields += 'ORC-[{:0>2}]24:"".  Give feedback.  This is a required field.'.format(str(index)) + cr_lf
     
@@ -137,8 +139,8 @@ def obr(obr_segments, orc_12):
         obr_fields += 'OBR[{:0>2}]'.format(str(index)) + cr_lf
         obr_fields += 'OBR[{:0>2}]-02.1:{}'.format(str(obr_field(1)), str(obr_field(2)(1)(1))) + cr_lf
         obr_fields += 'OBR[{:0>2}]-03.1:{}'.format(str(obr_field(1)), str(obr_field(3)(1)(1))) + cr_lf
-        obr_fields += 'OBR[{:0>2}]-02 (Susceptibility):{}'.format(str(obr_field(1)), str(obr_field(2)(1))) + cr_lf
-        obr_fields += 'OBR[{:0>2}]-03 (Susceptibility):{}'.format(str(obr_field(1)), str(obr_field(3)(1))) + cr_lf
+        # obr_fields += 'OBR[{:0>2}]-02 (Susceptibility):{}'.format(str(obr_field(1)), str(obr_field(2)(1))) + cr_lf
+        # obr_fields += 'OBR[{:0>2}]-03 (Susceptibility):{}'.format(str(obr_field(1)), str(obr_field(3)(1))) + cr_lf
         obr_fields += 'OBR[{:0>2}]-04:{}'.format(str(obr_field(1)), str(obr_field(4))) + cr_lf
         obr_fields += 'OBR[{:0>2}]-16:{}'.format(str(obr_field(1)), str(obr_field(16))) + cr_lf
         if str(obr_field(16)) == str(orc_12):
@@ -202,10 +204,12 @@ def obx(obx_segments):
         obx_fields += 'OBX[{:0>2}]-07:{}'.format(str(obx_field(1)), str(obx_field(7))) + cr_lf
         obx_fields += 'OBX[{:0>2}]-08:{}'.format(str(obx_field(1)), str(obx_field(8))) + cr_lf
         obx_fields += 'OBX[{:0>2}]-11:{}'.format(str(obx_field(1)), str(obx_field(11))) + cr_lf
+        obx_fields += 'OBX[{:0>2}]-19:{}'.format(str(obx_field(1)), str(obx_field(19))) + cr_lf
         obx_fields += 'OBX[{:0>2}]-23.1:{}'.format(str(obx_field(1)), str(obx_field(23)(1)(1))) + cr_lf
         obx_fields += 'OBX[{:0>2}]-23.6:{}'.format(str(obx_field(1)), str(obx_field(23)(1)(6))) + cr_lf
         obx_fields += 'OBX[{:0>2}]-23.10:{}'.format(str(obx_field(1)), str(obx_field(23)(1)(10))) + cr_lf
         obx_fields += '' + cr_lf
+
         index += 1
 
     obx_fields += '' + cr_lf
@@ -272,6 +276,7 @@ def susceptibility(segments):
     susceptibility_fields += 'OBR-26.3 link to parent OBX-5.9 or 5.5:' + cr_lf
     susceptibility_fields += tab + 'OBR-26.3:{}'.format(child_obr_26_3) + cr_lf
     # Use OBX 5.5 value if OBX 5.9 is missing
+    # Add code to also check 5.2
     if parent_obx_5_9 == '':
         susceptibility_fields += tab + 'OBX-05.5:{}'.format(parent_obx_5_5) + cr_lf
 
@@ -406,8 +411,8 @@ def generate_elr_report(parsed_hl7):
     # Print OBX Segment
     report_content += obx(parsed_hl7.segments('OBX'))
     # Print Susceptibilities
-    if re.search('SUSCEPTIBILITY', str(parsed_hl7).upper()) or re.search('SUSCEPTIBLE', str(parsed_hl7).upper()):
-        report_content += susceptibility(parsed_hl7.segments)
+    # if re.search('SUSCEPTIBILITY', str(parsed_hl7).upper()) or re.search('SUSCEPTIBLE', str(parsed_hl7).upper()):
+    #     report_content += susceptibility(parsed_hl7.segments)
 
     return report_content
 
