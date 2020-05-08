@@ -4,16 +4,11 @@ import hl7
 
 
 # File paths
+facility = 'Murphy'
 cr_lf = '\r\n'
 tab = '\t'
-# file_name = 'test_files/elr_wilson_45503.hl7'
-# file_name = 'test_files/elr_catwaba_04092020.hl7'
-# file_name = 'test_files/elr_caromont_2020_04_18.hl7'
-file_name = 'test_files/elr_lenoir_19513_original.hl7'
-# report_name = 'report/' + 'basic_elr_validation_report_wilson_45503.txt'
-# report_name = 'report/' + 'basic_elr_validation_report_catawba_04092020.txt'
-# report_name = 'report/' + 'basic_elr_validation_report_caromont_2020_04_18.txt'
-report_name = 'report/' + 'basic_elr_validation_report_lenoir_19513_original.txt'
+file_name = 'test_files/' + facility + '/' + 'elr_murphy_2020_05_05.hl7'
+report_name = 'report/' + facility + '/' + 'basic_elr_validation_report_murphy_2020_05_05.txt'
 report = ''
 
 # def MSH(segment):
@@ -162,18 +157,20 @@ def obr(obr_segments, orc_12):
             else:
                 obr_fields += 'OBR[{:0>2}]-26:'.format(str(obr_field(1))) + cr_lf
 
-            if obr_field(29)(1) != '':
-                obr_fields += 'OBR 29 (Susceptibilities)' + cr_lf
-                obr_fields += tab + 'OBR[{:0>2}]-29:{}'.format(str(obr_field(1)), str(obr_field(29))) + cr_lf
-                obr_fields += tab + tab + 'OBR[{:0>2}]-29.1:{}'.format(str(obr_field(1)), str(obr_field(29)(1)(1))) + cr_lf
-                obr_fields += tab + tab + 'OBR[{:0>2}]-29.2:{}'.format(str(obr_field(1)), str(obr_field(29)(1)(2))) + cr_lf
-            else:
-                obr_fields += 'OBR[{:0>2}]-29:'.format(str(obr_field(1))) + cr_lf
+            if len(obr_field) > 30:
+                if obr_field(29)(1) != '':
+                    obr_fields += 'OBR 29 (Susceptibilities)' + cr_lf
+                    obr_fields += tab + 'OBR[{:0>2}]-29:{}'.format(str(obr_field(1)), str(obr_field(29))) + cr_lf
+                    obr_fields += tab + tab + 'OBR[{:0>2}]-29.1:{}'.format(str(obr_field(1)), str(obr_field(29)(1)(1))) + cr_lf
+                    obr_fields += tab + tab + 'OBR[{:0>2}]-29.2:{}'.format(str(obr_field(1)), str(obr_field(29)(1)(2))) + cr_lf
+                else:
+                    obr_fields += 'OBR[{:0>2}]-29:'.format(str(obr_field(1))) + cr_lf
 
-            if obr_field(31)(1) != '':
-                obr_fields += 'OBR[{:0>2}]-31:{}'.format(str(obr_field(1)), str(obr_field(31))) + cr_lf
-            else:
-                obr_fields += 'OBR[{:0>2}]-31:'.format(str(obr_field(1))) + cr_lf
+                if len(obr_field) > 32:
+                    if obr_field(31)(1) != '':
+                        obr_fields += 'OBR[{:0>2}]-31:{}'.format(str(obr_field(1)), str(obr_field(31))) + cr_lf
+                    else:
+                        obr_fields += 'OBR[{:0>2}]-31:'.format(str(obr_field(1))) + cr_lf
 
             # obr_fields += 'OBR[{:0>2}]-29.1:{}'.format(str(obr_field(1)), str(obr_field(29)(1)(1))) + cr_lf
         obr_fields += '' + cr_lf
@@ -202,13 +199,18 @@ def obx(obx_segments):
         obx_fields += 'OBX[{:0>2}]-05:{}'.format(str(obx_field(1)), str(obx_field(5))) + cr_lf
         obx_fields += 'OBX[{:0>2}]-06:{}'.format(str(obx_field(1)), str(obx_field(6))) + cr_lf
         obx_fields += 'OBX[{:0>2}]-07:{}'.format(str(obx_field(1)), str(obx_field(7))) + cr_lf
-        obx_fields += 'OBX[{:0>2}]-08:{}'.format(str(obx_field(1)), str(obx_field(8))) + cr_lf
+        # obx_fields += 'OBX[{:0>2}]-08:{}'.format(str(obx_field(1)), str(obx_field(8))) + cr_lf
         obx_fields += 'OBX[{:0>2}]-11:{}'.format(str(obx_field(1)), str(obx_field(11))) + cr_lf
         obx_fields += 'OBX[{:0>2}]-19:{}'.format(str(obx_field(1)), str(obx_field(19))) + cr_lf
         obx_fields += 'OBX[{:0>2}]-23.1:{}'.format(str(obx_field(1)), str(obx_field(23)(1)(1))) + cr_lf
         obx_fields += 'OBX[{:0>2}]-23.6:{}'.format(str(obx_field(1)), str(obx_field(23)(1)(6))) + cr_lf
         obx_fields += 'OBX[{:0>2}]-23.10:{}'.format(str(obx_field(1)), str(obx_field(23)(1)(10))) + cr_lf
         obx_fields += '' + cr_lf
+
+        index += 1
+
+    for obx_field in obx_segments:
+        obx_fields += 'OBX[{:0>2}]-02:{} OBX[{:0>2}]-08:{}'.format(str(obx_field(1)), str(obx_field(2)), str(obx_field(1)), str(obx_field(8))) + cr_lf
 
         index += 1
 
@@ -411,8 +413,8 @@ def generate_elr_report(parsed_hl7):
     # Print OBX Segment
     report_content += obx(parsed_hl7.segments('OBX'))
     # Print Susceptibilities
-    # if re.search('SUSCEPTIBILITY', str(parsed_hl7).upper()) or re.search('SUSCEPTIBLE', str(parsed_hl7).upper()):
-    #     report_content += susceptibility(parsed_hl7.segments)
+    if re.search('SUSCEPTIBILITY', str(parsed_hl7).upper()) or re.search('SUSCEPTIBLE', str(parsed_hl7).upper()):
+        report_content += susceptibility(parsed_hl7.segments)
 
     return report_content
 
